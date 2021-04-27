@@ -59,8 +59,8 @@ namespace Search {
     constexpr float MATE_BOUND_MAX = MAX - 100;
     constexpr float MATE_BOUND_MIN = MIN + 100;
 
-    float move_time(const Options&, const Position&, const float&, const float&);
+    float move_time(const Position&, const float&, const float&);
 
     SearchInfo search(const Options&, const Position&, const int&, const double&, const bool&,
-        bool&, const bool&);
+        bool&);
 }

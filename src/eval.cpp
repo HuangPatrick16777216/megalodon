@@ -258,7 +258,7 @@ namespace Eval {
         return 0.25 * (w_cnt-b_cnt);
     }
 
-    float knights(const U64& wn, const U64& bn, const U64& wp, const U64& bp) {
+    float knights(const U64& wn, const U64& bn) {
         float wdist = 0, bdist = 0;
         const char wcnt = popcnt(wn), bcnt = popcnt(bn);
         const bool wp_in_cent = true;//((INNER_CENTER|OUTER_CENTER) & wp) != 0;
@@ -343,7 +343,7 @@ namespace Eval {
         const float sp          = options.EvalSpace      * space(pos.wp, pos.bp)                   / 5.F;
         const float pawn_struct = options.EvalPawnStruct * pawn_structure(pos.wp, pos.bp)          / 5.F;
         const float p_attacks   =                          pawn_attacks(pos)                       / 2.F;
-        const float knight      = options.EvalKnights    * knights(pos.wn, pos.bn, pos.wp, pos.bp) / 16.F;
+        const float knight      = options.EvalKnights    * knights(pos.wn, pos.bn)                 / 16.F;
         const float rook        = options.EvalRooks      * rooks(pos.wr, pos.br, pos.wp, pos.bp)   / 2.F;
         const float queen       = options.EvalQueens     * queens(pos)                             / 6.F;
         const float king        = options.EvalKings      * kings(pos.wk, pos.bk)                   / 16.F;

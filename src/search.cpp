@@ -83,7 +83,7 @@ bool SearchInfo::is_mate() {
 
 
 namespace Search {
-    float move_time(const Options& options, const Position& pos, const float& time, const float& inc) {
+    float move_time(const Position& pos, const float& time, const float& inc) {
         const int moves = std::max(55-pos.move_cnt, 5);
         const float time_left = time + inc*moves;
         const float move_time = time_left / moves;
@@ -168,7 +168,7 @@ namespace Search {
     }
 
     SearchInfo search(const Options& options, const Position& pos, const int& depth, const double& movetime,
-            const bool& infinite, bool& searching, const bool& stop_early) {
+            const bool& infinite, bool& searching) {
         const int eg = Endgame::eg_type(pos);
         const U64 o_attacks = Bitboard::attacked(pos, !pos.turn);
         const vector<Move> moves = Bitboard::legal_moves(pos, o_attacks);

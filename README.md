@@ -54,7 +54,7 @@ Requires g++.
 ``` bash
 git clone https://github.com/megalodon-chess/megalodon.git
 cd ./megalodon/src/
-g++ -pthread -Ofast -Wall *.cpp -o Megalodon
+g++ -pthread -Ofast -Wall -Wextra *.cpp -o Megalodon
 ./Megalodon
 ```
 
