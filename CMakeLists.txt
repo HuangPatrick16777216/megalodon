@@ -23,7 +23,7 @@ project(Megalodon)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "-pthread -Ofast -Wall")
+set(CMAKE_CXX_FLAGS "-pthread -Ofast -Wall -Wextra")
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)

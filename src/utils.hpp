@@ -16,30 +16,20 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-
 #pragma once
-
 #include <iostream>
 #include <vector>
 #include <string>
 #include "bitboard.hpp"
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
+#include "consts.hpp"
 
 double get_time();
-
 string strip(const string&);
 string replace(string, const string&);
 string join(const string&, const vector<string>&);
 vector<string> split(const string&, const string& = "");
 bool startswith(const string&, const string&);
 bool endswith(const string&, const string&);
-
 vector<Position> flatten(const vector<vector<Position>>& vec);
-
 string rand_choice(vector<string>);
 U64 randull();

@@ -22,20 +22,12 @@
 #include <string>
 #include "uci.hpp"
 #include "bitboard.hpp"
+#include "consts.hpp"
 #include "random.hpp"
 #include "hash.hpp"
 #include "eval.hpp"
 #include "search.hpp"
 #include "utils.hpp"
-
-#define VERSION  "1.0.0"
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
-
 
 void print_info() {
     cout << "Megalodon v" << VERSION << " - UCI chess engine" << "\n";
@@ -44,7 +36,6 @@ void print_info() {
     cout << "https://github.com/megalodon-chess/megalodon" << "\n";
     cout << "Licensed under GNU GPL v3: https://www.gnu.org/licenses/" << "\n";
 }
-
 
 void bench() {
     const Options options;
@@ -72,41 +63,33 @@ void bench() {
         "8/kpP3p1/p2n2P1/3Q3P/5q2/P7/KP6/8 w - - 0 1",
         "8/8/8/8/8/k7/8/K7 w - - 0 1",
     };
-
     U64 nodes = 0;
     const double start = get_time();
     bool searching = true;
-
     for (UCH i = 0; i < num_pos; i++) {
         cout << "Position " << i+1 << " of " << +num_pos << endl;
         cout << "Fen: " << fens[i] << endl;
-
         const Position pos = Bitboard::parse_fen(fens[i]);
-        const SearchInfo result = Search::search(options, pos, depth, 10000, false, searching, false);
+        const SearchInfo result = Search::search(options, pos, depth, 10000, false, searching);
         nodes += result.nodes;
     }
-
     const double elapse = get_time() - start;
     const int nps = nodes / elapse;
-
     cout << "\nBenchmark results:" << endl;
     cout << "Nodes: " << nodes << endl;
     cout << "NPS: " << nps << endl;
     cout << "Time: " << elapse << " seconds" << endl;
 }
 
-
 int main(const int argc, const char* argv[]) {
     cout << std::fixed;
     Random::set_seed(1234);
-
     if (argc >= 2) {
         if      (argv[1] == string("--version")) cout << VERSION << endl;
         else if (argv[1] == string("bench")) bench();
     } else {
         Hash::init();
         Eval::init();
-
         print_info();
         return loop();
     }

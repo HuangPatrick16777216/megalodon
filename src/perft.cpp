@@ -21,21 +21,15 @@
 #include <vector>
 #include <string>
 #include "bitboard.hpp"
+#include "consts.hpp"
 #include "utils.hpp"
 #include "hash.hpp"
 #include "eval.hpp"
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
 
 
 namespace Perft {
     long long movegen(const Position& pos, const int& depth) {
         if (depth == 0) return 1;
-
         long long count = 0;
         for (const auto& move: Bitboard::legal_moves(pos, Bitboard::attacked(pos, !pos.turn))) {
             const Position new_pos = Bitboard::push(pos, move);
@@ -43,22 +37,18 @@ namespace Perft {
         }
         return count;
     }
-
     double hash_perft(const Position& pos, const int& knodes) {
         const double start = get_time();
         for (auto i = 0; i < knodes*1000; i++) Hash::hash(pos);
         return get_time() - start;
     }
-
     double eval_perft(const Options& options, const Position& pos, const int& knodes) {
         const U64 o_attacks = Bitboard::attacked(pos, !pos.turn);
         const vector<Move> moves = Bitboard::legal_moves(pos, o_attacks);
-
         const double start = get_time();
         for (auto i = 0; i < knodes*1000; i++) Eval::eval(options, pos, moves, 0, o_attacks);
         return get_time() - start;
     }
-
     double push_perft(const Position& pos, const int& knodes) {
         const Move move = Bitboard::legal_moves(pos, Bitboard::attacked(pos, !pos.turn))[0];
         const double start = get_time();

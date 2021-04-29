@@ -17,4 +17,18 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#define DEBUG_MODE  0
+#include <iostream>
+#include <string>
+#include <vector>
+
+#define DEBUG  0
+#define VERSION  "1.0.0"
+
+typedef unsigned long long U64;
+typedef unsigned char      UCH;
+
+using std::cin;
+using std::cout;
+using std::endl;
+using std::vector;
+using std::string;

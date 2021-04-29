@@ -21,14 +21,9 @@
 #include <vector>
 #include <string>
 #include "bitboard.hpp"
+#include "consts.hpp"
 #include "endgame.hpp"
 #include "eval.hpp"
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
 
 
 namespace Endgame {
@@ -38,7 +33,6 @@ namespace Endgame {
         }
         return true;
     }
-
     vector<char> get_cnts(const Position& pos) {
         const char wpc = Bitboard::popcnt(pos.wp);
         const char wnc = Bitboard::popcnt(pos.wn);
@@ -52,19 +46,15 @@ namespace Endgame {
         const char bqc = Bitboard::popcnt(pos.bq);
         return {wpc, wnc, wbc, wrc, wqc, bpc, bnc, bbc, brc, bqc};
     }
-
     int eg_type(const Position& pos) {
         const vector<char> counts = get_cnts(pos);
-
         if (pos.turn && cnt_match(W_KQvK, counts)) {
             return 1;
         } else if (!pos.turn && cnt_match(B_KQvK, counts)) {
             return 1;
         }
-
         return 0;
     }
-
 
     Move bestmove(const Position& pos, const vector<Move>& moves, const int& eg) {
         const vector<char> counts = get_cnts(pos);
@@ -80,7 +70,6 @@ namespace Endgame {
         return Move();
     }
 
-
     Move kqvk(const vector<Move>& moves, const Position& pos, const U64& _ck, const U64& _cq, const U64& _ok) {
         const Location ck = Bitboard::first_bit(_ck);
         const Location cq = Bitboard::first_bit(_cq);
@@ -88,7 +77,6 @@ namespace Endgame {
         const char ckp = ck.loc;
         const char cqp = cq.loc;
         const char okp = ok.loc;
-
         char corner_dist = 16;
         Location closest_corner = CORNERS[0];
         for (const auto& corner: CORNERS) {
@@ -99,7 +87,6 @@ namespace Endgame {
                 closest_corner = cor;
             }
         }
-
         if (corner_dist <= 1 && ((abs(cq.x-ok.x)==1 && abs(cq.y-closest_corner.y) == 3) || (abs(cq.y-ok.y)==1 && abs(cq.x-closest_corner.x) == 3))) {
             const char dx = abs(cq.x-ok.x);
             const char dy = abs(cq.y-ok.y);
@@ -110,7 +97,6 @@ namespace Endgame {
                 if (closest_corner.y > 0) k_target.y = 5;
                 else k_target.y = 2;
                 const char k_target_pos = (k_target.y<<3) + k_target.x;
-
                 if (k_target_pos == ckp) {  // Do checkmating move
                     for (const auto& move: moves) {
                         const char ok_diff = abs(okp-move.to);
@@ -134,7 +120,6 @@ namespace Endgame {
                 }
             }
         }
-
         char best_dist = 16;
         char least_move_dist = 16;
         Move best_move = moves[0];
@@ -145,16 +130,13 @@ namespace Endgame {
                 if (new_moves.size() == 0) {
                     continue;  // Continue if move results in stalemate.
                 }
-
                 const Location to(move.to);
                 const char dx = abs(to.x-ok.x);
                 const char dy = abs(to.y-ok.y);
                 if ((dx==0 || dx==1) && (dy==0 || dy==1)) continue;  // If move goes to opponent's king
                 if (dx == 0 || dy == 0 || dx == dy) continue;  // Don't check king
-
                 const char dist = dx + dy;
                 const char move_dist = std::max(abs(to.x-cq.x), abs(to.y-cq.y));
-
                 if (dist < best_dist) {
                     best_move = move;
                     best_dist = dist;
@@ -165,7 +147,6 @@ namespace Endgame {
                 }
             }
         }
-
         return best_move;
     }
 }

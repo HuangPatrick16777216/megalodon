@@ -22,13 +22,8 @@
 #include <string>
 #include "hash.hpp"
 #include "bitboard.hpp"
+#include "consts.hpp"
 #include "utils.hpp"
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
 
 
 namespace Hash {
@@ -37,7 +32,6 @@ namespace Hash {
     U64 turn[2];
     U64 ep[2];
     U64 castling[15];
-
     void init() {
         for (UCH i = 0; i < 101; i++) {
             for (UCH j = 0; j < 64; j++) {
@@ -57,7 +51,6 @@ namespace Hash {
         ep[0] = randull();
         ep[1] = randull();
     }
-
     U64 hash(const Position& pos) {
         const U64 kings = pos.wk | pos.bk;
         const UCH idx = kings % 101;

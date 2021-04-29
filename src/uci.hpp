@@ -16,17 +16,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-
 #pragma once
-
 #include <iostream>
 #include <vector>
 #include <string>
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
 
 int loop();

@@ -21,23 +21,14 @@
 #include <vector>
 #include <string>
 #include "options.hpp"
-
 #define HASH_FACTOR  348000
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
 
 
 Transposition::Transposition() {
 }
 
-
 Options::Options() {
     Hash           = 256;
-
     EvalMaterial   = 1;
     EvalPawnStruct = 1;
     EvalSpace      = 1;
@@ -45,18 +36,15 @@ Options::Options() {
     EvalRooks      = 1;
     EvalQueens     = 1;
     EvalKings      = 1;
-
     hash_table = new Transposition[16];
     set_hash();
 }
-
 void Options::set_hash() {
     delete[] hash_table;
     hash_size = Hash * HASH_FACTOR;
     hash_table = new Transposition[hash_size];
     clear_hash();
 }
-
 void Options::clear_hash() {
     for (unsigned int i = 0; i < hash_size; i++) {
         hash_table[i].depth = 0;

@@ -21,19 +21,13 @@
 #include <vector>
 #include <string>
 #include "bitboard.hpp"
+#include "consts.hpp"
 #include "options.hpp"
 #include "eval.hpp"
 #include "search.hpp"
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
-
 using Bitboard::popcnt;
 using Bitboard::bit;
-
 
 namespace Eval {
     UCH CENTER_DIST_MAP[64];
@@ -56,11 +50,9 @@ namespace Eval {
         506381179683864576ULL, 1085102527893995520ULL, 2242545224314257408ULL, 4485090448628514816ULL,
         8970180897257029632ULL, 17940361794514059264ULL, 17361640446303928320ULL, 16204197749883666432ULL
     };
-
     void init() {
         for (UCH i = 0; i < 64; i++) CENTER_DIST_MAP[i] = center_dist(i);
     }
-
 
     float material(const Position& pos) {
         float value = 0;
@@ -76,7 +68,6 @@ namespace Eval {
         value -= popcnt(pos.bq) * 9;
         return value;
     }
-
     float total_mat(const Position& pos) {
         float value = 0;
         value += popcnt(pos.wp) * 1;
@@ -91,7 +82,6 @@ namespace Eval {
         value += popcnt(pos.bq) * 9;
         return value;
     }
-
     float non_pawn_mat(const Position& pos) {
         float value = 0;
         value += popcnt(pos.wn) * 3;
@@ -105,7 +95,6 @@ namespace Eval {
         return value;
     }
 
-
     float phase(const Position& pos) {
         // 1 = full middlegame, 0 = full endgame.
         const float npm = non_pawn_mat(pos);
@@ -113,7 +102,6 @@ namespace Eval {
         else if (npm <= ENDGAME_LIM) return 0;
         else return ((float)(npm-ENDGAME_LIM) / (MIDGAME_LIM-ENDGAME_LIM));
     }
-
     float middle_game(const float& pawn_struct, const float& p_attacks, const float& knight,
             const float& rook, const float& queen, const float& king, const float& space) {
         return (
@@ -126,7 +114,6 @@ namespace Eval {
             space       *  1.F
         );
     }
-
     float end_game(const float& pawn_struct, const float& p_attacks, const float& knight,
             const float& rook, const float& queen, const float& king, const float& space) {
         return (
@@ -140,7 +127,6 @@ namespace Eval {
         );
     }
 
-
     char center_dist(const char& i) {
         const char x = i&7, y = i>>3;
         const char xdist = (x<=3) ? 3-x : x-4;
@@ -148,24 +134,19 @@ namespace Eval {
         return xdist + ydist;
     }
 
-
     float space(const U64& wp, const U64& bp) {
         float sp = 0;
-
         for (char x = 2; x < 6; x++) {
             for (char y = 1; y < 5; y++) if (bit(wp, (y<<3)+x)) sp += y-1;
             for (char y = 3; y < 7; y++) if (bit(bp, (y<<3)+x)) sp -= 6-y;
         }
-
         return sp / 4.0F;
     }
-
     float pawn_structure(const U64& wp, const U64& bp) {
         // Values represent white - black
         char stacked = 0;
         char islands = 0;
         char passed = 0;
-
         // Generate file values
         char w_adv[8], b_adv[8];     // Position of most advanced pawn, side dependent (-1 if no pawn)
         char w_back[8], b_back[8];   // Position of least advanced pawn, side dependent (-1 if no pawn)
@@ -173,7 +154,6 @@ namespace Eval {
         for (UCH i = 0; i < 8; i++) {
             w_files[i] = wp & Bitboard::FILES[i];
             b_files[i] = bp & Bitboard::FILES[i];
-
             const U64 w = w_files[i] >> i;
             if (w == 0) {
                 w_adv[i] = -1;
@@ -188,7 +168,6 @@ namespace Eval {
                     }
                 }
             }
-
             const U64 b = b_files[i] >> i;
             if (b == 0) {
                 b_adv[i] = -1;
@@ -204,7 +183,6 @@ namespace Eval {
                 }
             }
         }
-
         // Stacked and islands
         bool w_on = false;
         bool b_on = false;
@@ -219,13 +197,11 @@ namespace Eval {
                 if (!b_on) islands--;
                 b_on = true;
             }
-
             const char wcnt = popcnt(w_files[i]);
             const char bcnt = popcnt(b_files[i]);
             if (wcnt >= 2) stacked += (wcnt-1);
             if (bcnt >= 2) stacked -= (bcnt-1);
         }
-
         // Passed
         for (UCH i = 0; i < 8; i++) {
             if (w_files[i] != 0) {
@@ -239,14 +215,12 @@ namespace Eval {
                 if (!blocked_right && !blocked_left) passed--;
             }
         }
-
         return (
             -0.3 * islands +
             -0.2 * stacked +
             0.6 * passed
         );
     }
-
     float pawn_attacks(const Position& pos) {
         const U64 w_attacks = Bitboard::attacked(pos.wp, 0, 0, 0, 0, 0, 0, true);
         const U64 b_attacks = Bitboard::attacked(pos.bp, 0, 0, 0, 0, 0, 0, false);
@@ -254,16 +228,13 @@ namespace Eval {
         const U64 black = Bitboard::get_black(pos) ^ pos.bp;
         const char w_cnt = popcnt(w_attacks & black);
         const char b_cnt = popcnt(b_attacks & white);
-
         return 0.25 * (w_cnt-b_cnt);
     }
-
-    float knights(const U64& wn, const U64& bn, const U64& wp, const U64& bp) {
+    float knights(const U64& wn, const U64& bn) {
         float wdist = 0, bdist = 0;
         const char wcnt = popcnt(wn), bcnt = popcnt(bn);
         const bool wp_in_cent = true;//((INNER_CENTER|OUTER_CENTER) & wp) != 0;
         const bool bp_in_cent = true;//((INNER_CENTER|OUTER_CENTER) & bp) != 0;
-
         for (UCH i = 0; i < 64; i++) {
             if (wp_in_cent && bit(wn, i)) {
                 wdist += 6 - CENTER_DIST_MAP[i];
@@ -271,15 +242,12 @@ namespace Eval {
                 bdist += 6 - CENTER_DIST_MAP[i];
             }
         }
-
         if (wcnt > 0) wdist /= wcnt;
         if (bcnt > 0) bdist /= bcnt;
         return wdist - bdist;
     }
-
     float rooks(const U64& wr, const U64& br, const U64& wp, const U64& bp) {
         float score = 0;
-
         for (UCH i = 0; i < 64; i++) {
             const UCH x = i&7;
             const U64 w = wp & Bitboard::FILES[x];
@@ -287,7 +255,6 @@ namespace Eval {
             const bool open = (w == 0) && (b == 0);
             const bool semi_open = !((w != 0) && (b != 0));
             const char dist = 3 - FILE_DIST_MAP[x];
-
             if (bit(wr, i)) {
                 if (open) score += 0.4F;
                 else if (semi_open) score += 0.15F;
@@ -298,14 +265,11 @@ namespace Eval {
                 score -= (float)(dist) / 20;
             }
         }
-
         return score;
     }
-
     float queens(const Position& pos) {
         const UCH wq = Bitboard::first_bit(pos.wq).loc, bq = Bitboard::first_bit(pos.bq).loc;
         const U64 white = Bitboard::get_white(pos), black = Bitboard::get_black(pos);
-
         float score = 0;
         score += (float)(6-CENTER_DIST_MAP[wq]) / 15;
         score -= (float)(6-CENTER_DIST_MAP[bq]) / 15;
@@ -313,7 +277,6 @@ namespace Eval {
         score -= (float)(popcnt(SURROUNDINGS[bq]&black)) / 35;
         return score;
     }
-
     float kings(const U64& wk, const U64& bk) {
         const Location w = Bitboard::first_bit(wk);
         const Location b = Bitboard::first_bit(bk);
@@ -321,7 +284,6 @@ namespace Eval {
         const char bdist = CENTER_DIST_MAP[b.loc];
         return wdist - bdist;
     }
-
 
     float eval(const Options& options, const Position& pos, const vector<Move>& moves, const int& depth, const U64& o_attacks,
             const bool print) {
@@ -338,22 +300,19 @@ namespace Eval {
             return 0;
         }
         if (pos.draw50 >= 100) return 0;
-
         const float mat         =                          material(pos)                           / 1.F;
         const float sp          = options.EvalSpace      * space(pos.wp, pos.bp)                   / 5.F;
         const float pawn_struct = options.EvalPawnStruct * pawn_structure(pos.wp, pos.bp)          / 5.F;
         const float p_attacks   =                          pawn_attacks(pos)                       / 2.F;
-        const float knight      = options.EvalKnights    * knights(pos.wn, pos.bn, pos.wp, pos.bp) / 16.F;
+        const float knight      = options.EvalKnights    * knights(pos.wn, pos.bn)                 / 16.F;
         const float rook        = options.EvalRooks      * rooks(pos.wr, pos.br, pos.wp, pos.bp)   / 2.F;
         const float queen       = options.EvalQueens     * queens(pos)                             / 6.F;
         const float king        = options.EvalKings      * kings(pos.wk, pos.bk)                   / 16.F;
-
         // Endgame and middle game are for weighting categories.
         const float mg = middle_game(pawn_struct, p_attacks, knight, rook, queen, king, sp);
         const float eg = end_game(pawn_struct, p_attacks, knight, rook, queen, king, sp);
         const float p = phase(pos);
         const float imbalance = mg*p + eg*(1-p);
-
         if (print) {
             cout << "       Material | " << mat           << "\n";
             cout << " Pawn Structure | " << pawn_struct   << "\n";
@@ -369,7 +328,6 @@ namespace Eval {
             cout << "      Imbalance | " << imbalance     << "\n";
             cout << "          Final | " << mat+imbalance << endl;
         }
-
         return mat + imbalance;
     }
 }

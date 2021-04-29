@@ -16,20 +16,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-
 #pragma once
-
 #include <iostream>
 #include <vector>
 #include <string>
 #include "bitboard.hpp"
+#include "consts.hpp"
 #include "options.hpp"
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::vector;
-using std::string;
 
 struct SearchInfo {
     SearchInfo();
@@ -37,7 +30,6 @@ struct SearchInfo {
         const float&, const float&, const bool&);
     string as_string();
     bool is_mate();
-
     int depth;
     int seldepth;
     float score;
@@ -46,21 +38,16 @@ struct SearchInfo {
     int hashfull;
     double time;
     vector<Move> pv;
-
     float alpha;
     float beta;
     bool full;
 };
-
 namespace Search {
     constexpr float MAX = 10000;
     constexpr float MIN = -10000;
-
     constexpr float MATE_BOUND_MAX = MAX - 100;
     constexpr float MATE_BOUND_MIN = MIN + 100;
-
-    float move_time(const Options&, const Position&, const float&, const float&);
-
+    float move_time(const Position&, const float&, const float&);
     SearchInfo search(const Options&, const Position&, const int&, const double&, const bool&,
-        bool&, const bool&);
+        bool&);
 }
